@@ -1,0 +1,207 @@
+# DeQ
+
+Your homelab's new start page. One place for links, stats, files, and automation.
+
+Ultra-lightweight manager for files, scheduled backups, and other essential tasks. Single Python file, ~300KB, no dependencies.
+
+**Website:** [deq.rocks](https://deq.rocks) · **Support:** [Patreon](https://patreon.com/deqrocks)
+
+![DeQ Screenshot](assets/screenshot.webp)
+
+## Security
+
+DeQ runs as root and provides full filesystem access through the file manager. This is by design for homelab management tasks like backups and file transfers.
+
+- DeQ has no built-in authentication
+- Use Tailscale or another VPN for remote access
+- Only run DeQ on trusted networks
+
+## Why DeQ?
+
+DeQ is a single Python file with zero dependencies. No Docker, no Node.js, no database — just Python and a web browser.
+
+This makes it ideal for low-power setups. Run it on a Raspberry Pi Zero 2W (150mA idle), an OpenWRT router, or any device that's already running 24/7. Use Wake-on-LAN and scheduled tasks to power on your storage servers only when needed, run backups, and shut them down again.
+
+With electricity prices rising and hardware costs increasing, every watt counts. A NAS idling at 10W costs €30-40/year. If it only needs to run for daily backups, DeQ can wake it, sync your data, and shut it down — automatically.
+
+## Features
+
+- **Quick Links** — Bookmarks to your services with custom icons (Lucide or Dashboard Icons)
+- **Device Control** — Wake-on-LAN, shutdown, Docker start/stop
+- **Scheduled Tasks** — Automated backups, wake and shutdown
+- **File Manager** — Dual-pane file browser, copy/move/upload between devices
+- **System Stats** — CPU, RAM, temperature, disk usage
+- **Theming** — Custom colors, wallpapers, and glass/blur effects
+- **PWA Support** — Install as an app on any device
+
+## Installation
+
+```bash
+wget https://github.com/deqrocks/deq/releases/download/stable/deq.zip
+unzip deq.zip
+cd deq
+sudo ./install.sh
+```
+
+The installer asks a few questions (IP, port) and gives you your access URL.
+
+## Getting Started
+
+1. Open your DeQ URL in a browser
+2. Click the pencil icon (top right) to enter edit mode
+3. Click + to add links or devices
+4. Click existing items to edit them
+5. Drag links or devices to reorder them
+6. Click the layout button (eco/1/4/2/4/4/4) to change link arrangement
+7. Click the eye icon to hide sections you don't need
+8. Click the palette icon to toggle monochrome icons
+9. Scroll down to the Theme section to customize colors and wallpaper
+
+The server running DeQ is automatically added as the "Host" device with local stats.
+
+## Icons
+
+Links and devices support three icon sources:
+
+| Format | Example | Description |
+|--------|---------|-------------|
+| Lucide | `server` | Default. See [lucide.dev/icons](https://lucide.dev/icons) |
+| Dashboard Icons | `dash:proxmox` | Self-hosted app icons. See [dashboardicons.com](https://dashboardicons.com) |
+
+In edit mode, click the palette icon next to "Links" to toggle monochrome mode for all icons.
+
+## Adding Devices
+
+Each device can have:
+
+| Feature | What it does |
+|---------|--------------|
+| **Wake-on-LAN** | Power on the device remotely |
+| **Quick Connect** | Buttons for RDP, VNC, or web interfaces |
+| **Docker** | Start/stop containers, with optional RDP/VNC/Web buttons |
+| **SSH** | Enables stats and shutdown for remote devices |
+
+### Understanding IP addresses
+
+DeQ uses different IPs for different purposes:
+
+- **Local IP** (device settings): Always your LAN IP (192.168.x.x). Used by the DeQ server for Wake-on-LAN, SSH connections, and ping checks.
+
+- **Quick Connect / Docker IPs**: These are for your browser/phone to connect. Use LAN IPs when at home, or Tailscale IPs when accessing remotely.
+
+**Example with Tailscale:**
+- Device Local IP: `192.168.1.100` (for WOL/SSH)
+- Docker VNC: `100.x.x.x:8006` (Tailscale IP, so VNC works from anywhere)
+
+### Connecting via SSH (optional)
+
+To see stats or shutdown remote devices, DeQ needs SSH access. This is optional — devices without SSH still work for Wake-on-LAN and links.
+
+**Quick setup:**
+```bash
+# Generate a key (skip if you already have one)
+ssh-keygen -t ed25519
+
+# Copy it to your device
+ssh-copy-id user@device-ip
+
+# DeQ runs as root, so copy the key there too
+sudo cp ~/.ssh/id_ed25519* /root/.ssh/
+sudo chmod 600 /root/.ssh/id_ed25519
+
+# Test it
+sudo ssh user@device-ip 'echo OK'
+```
+
+## Remote Access
+
+DeQ has no built-in authentication. For secure remote access, use [Tailscale](https://tailscale.com) or another VPN. Access DeQ via your Tailscale IP.
+
+## Scheduled Tasks
+
+DeQ can run tasks automatically:
+
+- **Wake** — Power on a device or start a Docker container
+- **Shutdown** — Power off a device or stop a Docker container
+- **Backup** — Sync files between devices using rsync
+
+Example workflow: Wake your NAS at 3 AM, run a backup from your main server, shut it down when done.
+
+## File Manager
+
+Click the folder icon (top right) to open the dual-pane file manager. Browse files on any device with SSH configured.
+
+**Features:**
+- Copy and move files between devices
+- Upload files (button or drag & drop)
+- Delete files
+- Create zip archives (or tar.gz as fallback)
+- Download individual files
+
+**Navigation:**
+- Click to select (single pane only)
+- Double-click to open folders
+- Drag files from your desktop to upload
+
+## Theming
+
+In edit mode, scroll down to the Theme section to customize the look:
+
+| Setting | Description |
+|---------|-------------|
+| **Colors** | Background, cards, borders, text, accent color |
+| **Glass** | Transparency effect for cards (0-100%) |
+| **Blur** | Background blur amount (0-30px) |
+| **Wallpaper** | Background image URL (https://...) |
+
+Click "Reset to Defaults" to restore the original dark theme.
+
+## Service Commands
+
+```bash
+sudo systemctl status deq     # Check status
+sudo systemctl restart deq    # Restart
+sudo journalctl -u deq -f     # View logs
+```
+
+## Data Storage
+
+All data is stored in `/opt/deq/config.json`. To backup: just copy `config.json`. To restore: copy it back and restart.
+
+## Updating
+
+To update DeQ, download the latest release and run the installer again:
+
+```bash
+wget https://github.com/deqrocks/deq/releases/download/stable/deq.zip
+unzip deq.zip && cd deq
+sudo ./install.sh
+```
+
+Your `config.json` is preserved — the installer only overwrites `server.py`.
+
+## Uninstall
+
+```bash
+sudo systemctl stop deq
+sudo systemctl disable deq
+sudo rm /etc/systemd/system/deq.service
+sudo rm -rf /opt/deq
+sudo systemctl daemon-reload
+```
+
+Or as single command
+
+```bash
+sudo systemctl stop deq && sudo systemctl disable deq && sudo rm /etc/systemd/system/deq.service && sudo rm -rf /opt/deq && sudo systemctl daemon-reload
+```
+
+## License
+
+CC BY-NC 4.0 — Free for personal use, no commercial use without permission. See [LICENSE](LICENSE).
+
+## Credits
+
+- [Lucide Icons](https://lucide.dev)
+- [Dashboard Icons](https://github.com/walkxcode/dashboard-icons)
+- [JetBrains Mono](https://www.jetbrains.com/mono/)

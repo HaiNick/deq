@@ -1,0 +1,17 @@
+# Fonts (included in release ZIP, not in repo)
+fonts/
+
+# Release artifacts
+deq.zip
+deq-release/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
