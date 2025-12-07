@@ -173,7 +173,7 @@ To update DeQ, download the latest release and run the installer again:
 
 ```bash
 wget https://github.com/deqrocks/deq/releases/download/stable/deq.zip
-unzip deq.zip && cd deq
+unzip deq.zip -d deq && cd deq
 sudo ./install.sh
 ```
 
