@@ -37,8 +37,7 @@ DeQ runs as root and has direct access to your system. That's what makes feature
 
 ```bash
 wget https://github.com/deqrocks/deq/releases/download/stable/deq.zip
-unzip deq.zip
-cd deq
+unzip deq.zip -d deq && cd deq
 sudo ./install.sh
 ```
 
@@ -66,6 +65,7 @@ Links and devices support three icon sources:
 |--------|---------|-------------|
 | Lucide | `server` | Default. See [lucide.dev/icons](https://lucide.dev/icons) |
 | Dashboard Icons | `dash:proxmox` | Self-hosted app icons. See [dashboardicons.com](https://dashboardicons.com) |
+| Custom URL | `https://...` | Any image URL |
 
 In edit mode, click the palette icon next to "Links" to toggle monochrome mode for all icons.
 
