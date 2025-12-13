@@ -1,8 +1,14 @@
 # DeQ
 
-Homelab admin deck for low-power devices.
+A mighty pocket rocket for your homelab. Breaking conventions – single file, no Docker, raw control.
 
-A small footprint dashboard with zero dependencies, that can live on your low power host alongside Pi-Hole.
+- 20MB RAM
+- 300Kb disk
+- Idles at 0% CPU - only wakes to work
+- Single Python file, no dependencies
+- Can live on a Pi or always-on server
+
+**DeQ - *Alles schläft, einer wacht.***
 
 **Website:** [deq.rocks](https://deq.rocks) · **Support:** [Patreon](https://patreon.com/deqrocks)
 
