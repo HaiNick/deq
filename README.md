@@ -1,43 +1,37 @@
 # DeQ
 
-A mighty pocket rocket for your homelab. Breaking conventions – single file, no Docker, raw control.
+![DeQ Hero](assets/DeQ-Hero.jpg)
 
-- 20MB RAM
-- 300Kb disk
-- Idles at 0% CPU - only wakes to work
-- Single Python file, no dependencies
-- Can live on a Pi or always-on server
+<p align="center">A bare-metal homelab admin deck with root access. Minimal footprint, runs anywhere.<p align="center"></p>
 
-**DeQ - *Alles schläft, einer wacht.***
+<p align="center">Small enough to live alongside Pi-hole on a Pi Zero. Capable enough to control your entire network.</p>
 
-**Website:** [deq.rocks](https://deq.rocks) · **Support:** [Patreon](https://patreon.com/deqrocks)
-
-![DeQ Screenshot](assets/screenshot.webp)
+<p align="center">**Website:** [deq.rocks](https://deq.rocks) · **Support:** [Patreon](https://patreon.com/deqrocks)</p>
 
 ## Concept
 
 **DeQ runs bare metal, not in Docker.**
 
-It's designed for low-power devices that are already online 24/7 – a Pi, a mini PC, an old laptop. These devices give you always-on access to your homelab via Tailscale or LAN, without the overhead of a full server.
-
-Docker would require a host capable of running Docker in the first place, plus workarounds for features that need direct hardware access: Wake-on-LAN requires raw sockets, the file manager needs your filesystem, SSH and rsync run as host processes, and shutdown commands don't work from inside a container.
+It's designed for low-power devices that are already online 24/7 - a Pi, a mini PC, even a WRT router. These give you always-on access to your homelab via Tailscale or LAN, without the overhead of a full server.
+Docker would add overhead and break core features: Wake-on-LAN needs raw sockets, the file manager needs your filesystem, SSH and rsync run as host processes, and shutdown commands don't work from inside a container.
+DeQ aims to bridge monitoring and control - but with a minimal footprint as its core principle. It bridges monitoring and control - with a minimal footprint as its core principle. One file, focused scope, no bloat.
 
 **This comes with responsibility.**
 
-DeQ runs as root and has direct access to your system. That's what makes features like WOL, file transfers, and remote shutdown possible – but it also means you should never expose it to the public internet.
+DeQ runs as root and has direct access to your system. That's what makes features like WOL, file transfers, and remote shutdown possible - but it also means you should never expose it to the public internet.
 
-- Use Tailscale or another VPN for remote access
+- Use Tailscale, Wireguard or another VPN for remote access
 - Only run DeQ on trusted networks
 
 ## Features
 
-- **Quick Links** — Bookmarks to your services with custom icons (Lucide or Dashboard Icons)
-- **Device Control** — Wake-on-LAN, shutdown, Docker start/stop
-- **Scheduled Tasks** — Automated backups, wake and shutdown
-- **File Manager** — Dual-pane file browser, copy/move/upload between devices
-- **System Stats** — CPU, RAM, temperature, disk usage
-- **Theming** — Custom colors, wallpapers, and transparency/blur effects
-- **PWA Support** — Install as an app on any device
+- **Device Control** - Wake-on-LAN, shutdown, Docker start/stop
+- **Scheduled Tasks** - Automated backups, wake and shutdown
+- **File Manager** - Dual-pane file browser, copy/move/upload between devices
+- **System Stats** - CPU, RAM, temperature, disk usage
+- **Quick Links** - Bookmarks to your services with custom icons (Lucide or Dashboard Icons)
+- **Theming** - Custom colors, wallpapers, and transparency/blur effects
+- **PWA Support** - Install as an app on any desktop or smartphone
 
 ## Installation
 
@@ -50,11 +44,12 @@ sudo ./install.sh
 The installer asks a few questions (IP, port) and gives you your access URL.
 
 ## Getting Started
+<p align="center"><img src="assets/DeQ-Onboarding-Devices.jpg" width="700"></p>
 
-1. Open your DeQ URL in a browser
-2. Click the pencil icon (top right) to enter edit mode
-3. Click + to add links or devices
-4. Click existing items to edit them
+1. Open your DeQ URL in a browser (like 192.168.1.1:5050)
+2. Follow the onboarding dialog to scan your network for devices and containers
+3. Click the pencil icon to edit existing items or to add devices manually
+4. Add links and notes - assign icons
 5. Drag links or devices to reorder them
 6. Click the layout button (eco/1/4/2/4/4/4) to change link arrangement
 7. Click the eye icon to hide sections you don't need
@@ -76,6 +71,14 @@ Links and devices support three icon sources:
 In edit mode, click the palette icon next to "Links" to toggle monochrome mode for all icons.
 
 ## Adding Devices
+<p align="center"><img src="assets/DeQ-Device-Features.jpg" width="700"></p>
+
+**Manually**
+You can manually add devices by activating the edit mode > go to the devices section > click "+".
+After you added the device you can manually add containers or scan for containers running on that device.
+
+**Using the Wizard**
+You can automatically add devices and containers by using the wizard: activate edit mode > go to the devices section > click "scan". Add your devices and SSH user name. Next step it will scan for Docker containers. Make sure to have ssh keypairs exchanged for that to work.
 
 Each device can have:
 
@@ -85,6 +88,7 @@ Each device can have:
 | **Quick Connect** | Buttons for RDP, VNC, or web interfaces |
 | **Docker** | Scan for containers or add manually, start/stop, optional RDP/VNC/Web buttons |
 | **SSH** | Enables stats and shutdown for remote devices |
+
 
 ### Understanding IP addresses
 
@@ -100,7 +104,7 @@ DeQ uses different IPs for different purposes:
 
 ### Connecting via SSH (optional)
 
-To see stats or shutdown remote devices, DeQ needs SSH access. This is optional — devices without SSH still work for Wake-on-LAN and links.
+To see stats or shutdown remote devices, DeQ needs SSH access. This is optional - devices without SSH still work for Wake-on-LAN and links.
 
 **Quick setup:**
 ```bash
@@ -123,23 +127,26 @@ sudo ssh user@device-ip 'echo OK'
 DeQ has no built-in authentication. For secure remote access, use [Tailscale](https://tailscale.com) or another VPN. Access DeQ via your Tailscale IP.
 
 ## Scheduled Tasks
+<p align="center"><img src="assets/DeQ-Task-Wizard.jpg" width="700"></p>
 
 DeQ can run tasks automatically:
 
-- **Wake** — Power on a device or start a Docker container
-- **Shutdown** — Power off a device or stop a Docker container
-- **Backup** — Sync files between devices using rsync
+- **Wake** - Power on a device or start a Docker container
+- **Shutdown** - Power off a device or stop a Docker container
+- **Backup** - Sync files between devices using rsync
 
 Example workflow: Wake your NAS at 3 AM, run a backup from your main server, shut it down when done.
 
 ## File Manager
+<p align="center"><img src="assets/DeQ-File-Manager.jpg" width="700"></p>
 
-Click the folder icon (top right) to open the dual-pane file manager. Browse files on any device with SSH configured.
+Click the folder icon (top right) to open the dual-pane file manager. Browse files on any device with SSH configured. File Manager will also work on your smartphone. BE CAREFUL with what you're doing in the root folder!
 
 **Features:**
 - Copy and move files between devices
 - Upload files (button or drag & drop)
 - Delete files
+- Create new Folders
 - Create zip archives (or tar.gz as fallback)
 - Download individual files
 
@@ -160,6 +167,27 @@ In edit mode, scroll down to the Theme section to customize the look:
 | **Wallpaper** | Background image URL (https://...) |
 
 Click "Reset to Defaults" to restore the original dark theme.
+
+## Install as App (PWA)
+<p align="center"><img src="assets/DeQ-PWA-Desktop.jpg" width="700"></p>
+
+DeQ works as a Progressive Web App - install it like a native app on any device. No app store, no updates to manage.
+
+**Why install as an app?**
+- One tap access from your home screen or dock
+- No browser tabs to dig through
+- Fullscreen, distraction-free interface
+- Will serve the bookmarks that are important in your homelab context
+
+**How to install:**
+
+| Platform | Steps |
+|----------|-------|
+| **iOS/iPadOS** | Safari → Share button → "Add to Home Screen" |
+| **Android** | Chrome → Menu (⋮) → "Add to Home Screen" or "Install app" |
+| **macOS/Windows** | Chrome → Menu (⋮) → "Cast, save, and share" → "Install page as app..." |
+
+Once installed, DeQ opens in its own window and feels like a native app.
 
 ## Service Commands
 
@@ -183,7 +211,7 @@ unzip deq.zip -d deq && cd deq
 sudo ./install.sh
 ```
 
-Your `config.json` is preserved — the installer only overwrites `server.py`.
+Your `config.json` is preserved - the installer only overwrites `server.py`.
 
 ## Uninstall
 
@@ -203,7 +231,7 @@ sudo systemctl stop deq && sudo systemctl disable deq && sudo rm /etc/systemd/sy
 
 ## License
 
-CC BY-NC 4.0 — Free for personal use, no commercial use without permission. See [LICENSE](LICENSE).
+CC BY-NC 4.0 - Free for personal use, no commercial use without permission. See [LICENSE](LICENSE).
 
 ## Credits
 
