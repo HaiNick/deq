@@ -6,7 +6,7 @@
 
 <p align="center">Small enough to live alongside Pi-hole on a Pi Zero. Capable enough to control your entire network.</p>
 
-<p align="center">**Website:** [deq.rocks](https://deq.rocks) · **Support:** [Patreon](https://patreon.com/deqrocks)</p>
+<p align="center">Website: [deq.rocks](https://deq.rocks) · Support: [Patreon](https://patreon.com/deqrocks)</p>
 
 ## Concept
 
