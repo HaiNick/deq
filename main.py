@@ -27,10 +27,10 @@ def ensure_directories() -> None:
 
 
 def load_static_content() -> tuple:
-    """Load static content from files or embedded strings."""
+    """Load static content from files."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
-    # Try to load from static/ directory first
+    # Load from static/ directory
     html_path = os.path.join(script_dir, 'static', 'index.html')
     manifest_path = os.path.join(script_dir, 'static', 'manifest.json')
     icon_path = os.path.join(script_dir, 'static', 'icon.svg')
@@ -50,28 +50,6 @@ def load_static_content() -> tuple:
     if os.path.exists(icon_path):
         with open(icon_path, 'r', encoding='utf-8') as f:
             icon = f.read()
-    
-    # Fallback: check if server.py still exists and has embedded content
-    if not html or not manifest or not icon:
-        server_py = os.path.join(script_dir, 'server.py')
-        if os.path.exists(server_py):
-            print("[Warning] Static files not found, using embedded content from server.py")
-            # Import from server.py as fallback during migration
-            try:
-                # This allows gradual migration
-                import importlib.util
-                spec = importlib.util.spec_from_file_location("server", server_py)
-                server_module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(server_module)
-                
-                if not html:
-                    html = getattr(server_module, 'HTML_PAGE', '')
-                if not manifest:
-                    manifest = getattr(server_module, 'MANIFEST_JSON', '')
-                if not icon:
-                    icon = getattr(server_module, 'ICON_SVG', '')
-            except Exception as e:
-                print(f"[Warning] Failed to load from server.py: {e}")
     
     return html, manifest, icon
 

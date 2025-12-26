@@ -46,14 +46,23 @@ echo "Installing to /opt/deq..."
 # Create directories
 mkdir -p /opt/deq/fonts
 mkdir -p /opt/deq/history
+mkdir -p /opt/deq/logs
+mkdir -p /opt/deq/task-logs
 
-# Copy files
-cp server.py /opt/deq/
-chmod +x /opt/deq/server.py
+# Copy application files
+cp -r main.py config.py /opt/deq/
+cp -r api/ core/ web/ utils/ fileops/ auth/ audit/ middleware/ notifications/ static/ /opt/deq/
+chmod +x /opt/deq/main.py
+
+# Copy wallpapers if present
+if [ -d "wallpapers" ] && [ "$(ls -A wallpapers 2>/dev/null)" ]; then
+    cp -r wallpapers/ /opt/deq/
+    echo "[OK] Wallpapers installed"
+fi
 
 # Copy fonts if present
 if [ -d "fonts" ] && [ "$(ls -A fonts 2>/dev/null)" ]; then
-    cp fonts/* /opt/deq/fonts/
+    cp -r fonts/* /opt/deq/fonts/
     echo "[OK] Fonts installed"
 else
     echo "[INFO] No fonts found. Download JetBrains Mono manually:"
@@ -69,7 +78,7 @@ After=network.target docker.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /opt/deq/server.py --port $PORT
+ExecStart=/usr/bin/python3 /opt/deq/main.py --port $PORT
 WorkingDirectory=/opt/deq
 Restart=always
 RestartSec=5

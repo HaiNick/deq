@@ -3,7 +3,7 @@
 ## <p align="center">A bare-metal admin deck with native Android companion app<br>
 
 - Full file manager. Task and Backup scheduling. Container control. Push alerts to your phone
-- Vanilla code. No dependencies. One Python file. 300KB. 20MB RAM
+- Vanilla code. Zero Python dependencies. Lightweight. ~20MB RAM
 
 
 ![DeQ Hero](assets/DeQ-Hero.jpg)
@@ -38,7 +38,7 @@ When your Docker daemon crashes, when an update borks the container network, whe
 
 **Yes, it runs as root. Here's why that's okay.**
 
-The security model is "trusted tool on a trusted network." DeQ assumes you're behind a VPN (Tailscale, WireGuard). The code is auditable - all 300KB of it. A technically competent user can read exactly what DeQ does in an afternoon. Compare that to trusting a 200MB Docker image with layers of abstraction you'll never inspect.
+The security model is "trusted tool on a trusted network." DeQ assumes you're behind a VPN (Tailscale, WireGuard). The code is auditable - just Python stdlib with no external dependencies. A technically competent user can read exactly what DeQ does. Compare that to trusting a 200MB Docker image with layers of abstraction you'll never inspect.
 
 - Never expose DeQ to the public internet
 - Use Tailscale, WireGuard, or another VPN for remote access
@@ -319,7 +319,7 @@ unzip deq.zip -d deq && cd deq
 sudo ./install.sh
 ```
 
-Your `config.json` is preserved - the installer only overwrites `server.py`.
+Your `config.json` is preserved - the installer only overwrites the application files.
 
 ## Uninstall
 
