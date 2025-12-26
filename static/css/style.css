@@ -1372,3 +1372,72 @@ select.form-input {
     border-color: var(--accent);
     background: rgba(46, 213, 115, 0.1);
 }
+
+/* ===== CONTAINER LIST CONFIG ===== */
+.container-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.container-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.container-item-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.container-item-remove {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    transition: opacity 0.15s, color 0.15s;
+}
+
+.container-item-remove:hover {
+    opacity: 1;
+    color: var(--danger);
+}
+
+.container-add-row {
+    display: flex;
+    gap: 8px;
+}
+
+.container-add-row .form-input {
+    flex: 1;
+}
+
+.btn-small {
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+.container-list:empty::before {
+    content: 'No containers configured';
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-style: italic;
+    padding: 8px 0;
+}

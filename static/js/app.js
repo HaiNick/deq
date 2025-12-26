@@ -174,6 +174,17 @@ const App = {
             if (e.key === 'Escape') UI.hideAllModals();
         });
 
+        // Container input enter key
+        const containerInput = document.getElementById('device-container-input');
+        if (containerInput) {
+            containerInput.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.addContainerToList();
+                }
+            };
+        }
+
         // Drag and drop for links and devices
         this.bindDragDrop();
     },
@@ -428,9 +439,67 @@ const App = {
         document.getElementById('device-ssh-user').value = device.ssh_user || '';
         document.getElementById('device-ssh-port').value = device.ssh_port || 22;
 
+        // Load docker containers
+        const containers = device.docker?.containers || [];
+        this._deviceContainers = [...containers];
+        this.renderContainerList();
+
         modal.dataset.index = index ?? '';
 
         UI.showModal('device-modal');
+    },
+
+    /**
+     * Render container list in device modal
+     */
+    renderContainerList() {
+        const list = document.getElementById('device-containers');
+        if (!list) return;
+        
+        list.innerHTML = this._deviceContainers.map((name, i) => `
+            <div class="container-item">
+                <span class="container-item-name">${UI.escapeHtml(name)}</span>
+                <button type="button" class="container-item-remove" onclick="App.removeContainerFromList(${i})" title="Remove">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        `).join('');
+    },
+
+    /**
+     * Add container to list
+     */
+    addContainerToList() {
+        const input = document.getElementById('device-container-input');
+        const name = input.value.trim();
+        
+        if (!name) return;
+        
+        // Validate container name (alphanumeric, underscores, dashes, dots)
+        if (!/^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/.test(name)) {
+            UI.toast('Invalid container name', 'error');
+            return;
+        }
+        
+        if (this._deviceContainers.includes(name)) {
+            UI.toast('Container already in list', 'error');
+            return;
+        }
+        
+        this._deviceContainers.push(name);
+        this.renderContainerList();
+        input.value = '';
+        input.focus();
+    },
+
+    /**
+     * Remove container from list
+     */
+    removeContainerFromList(index) {
+        this._deviceContainers.splice(index, 1);
+        this.renderContainerList();
     },
 
     /**
@@ -450,10 +519,16 @@ const App = {
             ssh_port: parseInt(document.getElementById('device-ssh-port').value) || 22
         };
 
+        // Add docker containers if any configured
+        if (this._deviceContainers && this._deviceContainers.length > 0) {
+            device.docker = { containers: [...this._deviceContainers] };
+        }
+
         // Preserve existing data
         if (index !== '') {
             const existing = this.config.devices[parseInt(index)];
             device.is_host = existing.is_host;
+            // Keep runtime container state but use configured list
             device.containers = existing.containers;
         }
 
