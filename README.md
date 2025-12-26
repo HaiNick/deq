@@ -58,7 +58,7 @@ The security model is "trusted tool on a trusted network." DeQ assumes you're be
 
 ```bash
 cd /opt
-sudo git clone https://github.com/deqrocks/deq.git
+sudo git clone https://github.com/HaiNick/deq.git
 cd deq
 sudo ./install.sh
 ```
