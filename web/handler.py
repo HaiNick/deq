@@ -103,7 +103,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             return True, ""
         
         # Static assets don't require auth
-        if path in ('/', '/manifest.json', '/icon.svg') or path.startswith('/fonts/'):
+        if path in ('/', '/manifest.json', '/icon.svg') or path.startswith('/fonts/') or path.startswith('/css/') or path.startswith('/js/'):
             return True, ""
         
         # Check API authentication
@@ -215,6 +215,22 @@ class RequestHandler(BaseHTTPRequestHandler):
                 access_log("GET", path, 200, (time.time() - start_time) * 1000)
                 return
             
+            # CSS files
+            if path.startswith('/css/'):
+                if self._handle_static_file(path, 'text/css'):
+                    access_log("GET", path, 200, (time.time() - start_time) * 1000)
+                else:
+                    access_log("GET", path, 404, (time.time() - start_time) * 1000)
+                return
+            
+            # JavaScript files
+            if path.startswith('/js/'):
+                if self._handle_static_file(path, 'application/javascript'):
+                    access_log("GET", path, 200, (time.time() - start_time) * 1000)
+                else:
+                    access_log("GET", path, 404, (time.time() - start_time) * 1000)
+                return
+            
             # API routes
             if path.startswith('/api/'):
                 self._handle_api_get(path, query)
@@ -248,6 +264,37 @@ class RequestHandler(BaseHTTPRequestHandler):
                     self.send_file(f.read(), 'font/woff2')
                 return
         self.send_response(404)
+    
+    def _handle_static_file(self, path: str, content_type: str) -> bool:
+        """
+        Handle static file requests (CSS, JS).
+        Returns True if file was served, False if not found.
+        """
+        # Sanitize path - prevent directory traversal
+        safe_path = path.lstrip('/').replace('..', '')
+        
+        # Look for file in static directory
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        static_paths = [
+            os.path.join(script_dir, '..', 'static', safe_path),
+            os.path.join(DATA_DIR, 'static', safe_path)
+        ]
+        
+        for file_path in static_paths:
+            if os.path.exists(file_path) and os.path.isfile(file_path):
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    self.send_file(content, content_type)
+                    return True
+                except Exception as e:
+                    error_log(f"Error reading static file: {e}", action="static_file")
+                    return False
+        
+        self.send_response(404)
+        self._add_security_headers()
+        self.end_headers()
+        return False
         self.end_headers()
 
     def _handle_api_get(self, path: str, query: dict) -> None:
