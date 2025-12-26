@@ -49,22 +49,41 @@ mkdir -p /opt/deq/history
 mkdir -p /opt/deq/logs
 mkdir -p /opt/deq/task-logs
 
-# Copy application files
-cp -r main.py config.py /opt/deq/
-cp -r api/ core/ web/ utils/ fileops/ auth/ audit/ middleware/ notifications/ static/ /opt/deq/
-chmod +x /opt/deq/main.py
+# Get current directory
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# Copy wallpapers if present
-if [ -d "wallpapers" ] && [ "$(ls -A wallpapers 2>/dev/null)" ]; then
-    cp -r wallpapers/ /opt/deq/
-    echo "[OK] Wallpapers installed"
+# Only copy files if not already running from /opt/deq
+if [ "$SCRIPT_DIR" != "/opt/deq" ]; then
+    echo "Copying files from $SCRIPT_DIR..."
+    cp -r "$SCRIPT_DIR/main.py" "$SCRIPT_DIR/config.py" /opt/deq/
+    cp -r "$SCRIPT_DIR/api" "$SCRIPT_DIR/core" "$SCRIPT_DIR/web" "$SCRIPT_DIR/utils" \
+          "$SCRIPT_DIR/fileops" "$SCRIPT_DIR/auth" "$SCRIPT_DIR/audit" \
+          "$SCRIPT_DIR/middleware" "$SCRIPT_DIR/notifications" "$SCRIPT_DIR/static" /opt/deq/
+    
+    # Copy wallpapers if present
+    if [ -d "$SCRIPT_DIR/wallpapers" ] && [ "$(ls -A "$SCRIPT_DIR/wallpapers" 2>/dev/null)" ]; then
+        cp -r "$SCRIPT_DIR/wallpapers" /opt/deq/
+        echo "[OK] Wallpapers installed"
+    fi
+    
+    # Copy fonts if present
+    if [ -d "$SCRIPT_DIR/fonts" ] && [ "$(ls -A "$SCRIPT_DIR/fonts" 2>/dev/null)" ]; then
+        cp -r "$SCRIPT_DIR/fonts/"* /opt/deq/fonts/
+        echo "[OK] Fonts installed"
+    fi
+    
+    # Clean up source directory after copying
+    echo "Cleaning up $SCRIPT_DIR..."
+    rm -rf "$SCRIPT_DIR"
+    echo "[OK] Source directory removed"
+else
+    echo "Running from /opt/deq, skipping file copy..."
 fi
 
-# Copy fonts if present
-if [ -d "fonts" ] && [ "$(ls -A fonts 2>/dev/null)" ]; then
-    cp -r fonts/* /opt/deq/fonts/
-    echo "[OK] Fonts installed"
-else
+chmod +x /opt/deq/main.py
+
+# Check for fonts
+if [ ! "$(ls -A /opt/deq/fonts 2>/dev/null)" ]; then
     echo "[INFO] No fonts found. Download JetBrains Mono manually:"
     echo "       https://github.com/JetBrains/JetBrainsMono/releases"
     echo "       Extract .woff2 files to /opt/deq/fonts/"
