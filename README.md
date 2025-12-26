@@ -57,8 +57,9 @@ The security model is "trusted tool on a trusted network." DeQ assumes you're be
 ## Installation
 
 ```bash
-wget https://github.com/deqrocks/deq/releases/latest/download/deq.zip
-unzip deq.zip -d deq && cd deq
+cd /opt
+sudo git clone https://github.com/deqrocks/deq.git
+cd deq
 sudo ./install.sh
 ```
 
